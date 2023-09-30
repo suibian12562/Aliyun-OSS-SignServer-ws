@@ -41,6 +41,8 @@ using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 typedef server::message_ptr message_ptr;
 void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
+void on_http(server* s, websocketpp::connection_hdl hdl);
+void on_close(websocketpp::connection_hdl);
 
 int main(int argc, char* argv[]){
     std::cout << "Specified port: " << config.port << std::endl;
@@ -62,6 +64,9 @@ int main(int argc, char* argv[]){
 
         // Register our message handler
         echo_server.set_message_handler(bind(&on_message, &echo_server, ::_1, ::_2));
+        echo_server.set_http_handler(bind(&on_http, &echo_server, ::_1));
+        echo_server.set_close_handler(&on_close);
+
         //bind()
 
         echo_server.listen(config.port);
@@ -149,8 +154,9 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
         time_t now;
         json data = json::parse(msg->get_payload());//get data from client
         //cout << data << endl;
-        temp = json::parse(msg->get_payload()).get<message_info>();//json to message_info(temp)
-        for (auto it = begin(cache); it != end(cache); ++it, ++i)
+       temp = json::parse(msg->get_payload()).get<message_info>();//json to message_info(temp)
+       /*AfterDelete://unreadable
+       for (auto it = begin(cache); it != end(cache); ++it, ++i)
         {
             if (temp._GetobjectUrlName == cache[i]._GetobjectUrlName && (time(&now) - cache[i]._request_time) < config.sign_time)
             {
@@ -162,10 +168,31 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
             if ((time(&now) - cache[i]._request_time) < config.sign_time)
             {
                 cache.erase(cache.begin() + i); // 删除下标为 i 的元素
-                cout << "delete vector" << i << endl;
+                cout << "*********************delete vector*************************" << i << endl;
+                goto AfterDelete;
             }
-        }
-        //cout << info._Bucket <<endl<< info._Endpoint << endl << info._GetobjectUrlName << endl;
+        }*///bugful 
+       auto it = begin(cache);
+       while (it != end(cache))
+       {
+           if ((time(&now) - it->_request_time) < config.sign_time)
+           {
+               cout << "**Hit cache**\a" << endl;
+               if_cache = 1;
+               break;
+           }
+           else
+           {
+               cout << "*********************delete vector*************************\a" << i << endl;
+               it = cache.erase(it);
+           }
+       }
+
+       if (if_cache != 1)
+       {
+           ++i;
+       }
+
         string buf;
         if (if_cache != 1)
         {
@@ -215,6 +242,22 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
         s->send(hdl, e.what(), msg->get_opcode());
     }
 }//websocket server
+
+void on_http(server* s, websocketpp::connection_hdl hdl) {
+    server::connection_ptr con = s->get_con_from_hdl(hdl);
+
+    std::string res = con->get_request_body();
+
+    std::stringstream ss;
+    ss << "got HTTP request with " << res.size() << " bytes of body data.";
+
+    con->set_body(ss.str());
+    con->set_status(websocketpp::http::status_code::ok);
+}//test
+
+void on_close(websocketpp::connection_hdl) {
+    std::cout << "Close handler" << std::endl;
+}
 
 string subreplace(string resource_str, string sub_str, string new_str)
 {

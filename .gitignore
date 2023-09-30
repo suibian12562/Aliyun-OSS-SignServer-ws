@@ -30,3 +30,14 @@
 *.exe
 *.out
 *.app
+
+Debug/
+release/
+vcpkg_installed/
+x64/
+*.vcxproj
+*.filters
+HelloSocket-2023.8.6.vcxproj.filters
+*.user
+*.json
+
