@@ -23,8 +23,8 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug/alibabacloud-oss-cpp-sdk.lib 
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug/
                    ${CMAKE_CURRENT_BINARY_DIR}
                    )
 
