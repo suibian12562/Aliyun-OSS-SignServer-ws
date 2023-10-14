@@ -1,7 +1,7 @@
 ﻿#include <iostream>
-#include<string>
-#include<vector>
-#include<ctime>
+#include <string>
+#include <vector>
+#include <ctime>
 #include <fstream>
 
 #include <websocketpp/config/asio_no_tls.hpp>
