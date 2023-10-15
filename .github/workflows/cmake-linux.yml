@@ -42,6 +42,7 @@ jobs:
       run: |
         mkdir build
         ls
+        pwd
         cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
