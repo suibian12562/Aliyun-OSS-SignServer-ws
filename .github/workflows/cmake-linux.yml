@@ -68,6 +68,7 @@ jobs:
       matrix:
         platform:
           - ubuntu-latest
+          - windows-latest
         architecture:
           - x64
 
@@ -86,12 +87,15 @@ jobs:
 
       - name: Install dependents
         run: |
-          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-            sudo apt-get update
-            sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build -y
-          elif [ "${{ matrix.platform }}" == "windows-latest" ]; then
-            choco install ninja
-          fi
+            if ($env:RUNNER_OS -eq "Windows") {
+              choco install ninja
+            }
+            elseif ($env:RUNNER_OS -eq "Linux") {
+              sudo apt-get update
+              sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build -y
+            }
+        
+        
 
       - name: Install vcpkg
         run: |
@@ -111,11 +115,7 @@ jobs:
       - name: Configure CMake
         run: |
           mkdir build
-          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-            cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DVCPKG_TARGET_TRIPLET=x64-linux -GNinja
-          else
-            cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DVCPKG_TARGET_TRIPLET=x64-windows -GNinja
-          fi
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
         working-directory: ${{ github.workspace }}
 
       - name: Build
