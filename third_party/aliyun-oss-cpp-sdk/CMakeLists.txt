@@ -99,7 +99,17 @@ else()
 endif()
 
 #Compiler flags
-list(APPEND SDK_COMPILER_FLAGS "-std=c++11")
+# list(APPEND SDK_COMPILER_FLAGS "-std=c++11")
+if(UNIX)
+    # UNIX平台（包括Linux和macOS）
+    list(APPEND SDK_COMPILER_FLAGS "-std=c++11")
+elseif(WIN32)
+    # Windows平台
+    list(APPEND SDK_COMPILER_FLAGS "/std:c++11")
+endif()
+#the code by aliyun is shit!
+
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	list(APPEND SDK_COMPILER_FLAGS "/MP")
 	if (NOT ENABLE_RTTI)
