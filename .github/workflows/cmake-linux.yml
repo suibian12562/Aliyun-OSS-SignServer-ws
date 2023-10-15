@@ -25,6 +25,11 @@ jobs:
     - name: Check if code is checked out
       run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
 
+    - name: Install dependents
+      run: |
+        sudo apt-get update or try with --fix-missing
+        sudo apt-get install libcurl4-openssl-dev libssl-dev -y
+
     - name: Install vcpkg
       run: |
         git clone https://github.com/Microsoft/vcpkg.git
@@ -35,10 +40,6 @@ jobs:
     - name: Install vcpkg package
       run: |
         vcpkg install
-
-    - name: Install dependents
-      run: |
-        sudo apt-get install libcurl4-openssl-dev libssl-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

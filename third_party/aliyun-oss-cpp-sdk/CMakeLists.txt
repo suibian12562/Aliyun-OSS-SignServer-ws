@@ -25,6 +25,7 @@ project(alibabacloud-oss-cpp-sdk VERSION ${version})
 message(STATUS "Project version: ${PROJECT_VERSION}")
 set(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 set(TARGET_OUTPUT_NAME_PREFIX "alibabacloud-oss-" CACHE STRING "The target's output name prefix")
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)#better
 
 #Options
 option(BUILD_SHARED_LIBS  "Enable shared library" OFF)
@@ -97,18 +98,6 @@ else()
 	set(CLIENT_INCLUDE_DIRS ${CURL_INCLUDE_DIRS}) 
 	set(CLIENT_LIBS_ABSTRACT_NAME curl)
 endif()
-
-#Compiler flags
-# list(APPEND SDK_COMPILER_FLAGS "-std=c++11")
-if(UNIX)
-    # UNIX平台（包括Linux和macOS）
-    list(APPEND SDK_COMPILER_FLAGS "-std=c++11")
-elseif(WIN32)
-    # Windows平台
-    list(APPEND SDK_COMPILER_FLAGS "/std:c++11")
-endif()
-#the code by aliyun is shit!
-
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	list(APPEND SDK_COMPILER_FLAGS "/MP")
