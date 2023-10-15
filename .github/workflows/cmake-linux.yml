@@ -1,6 +1,56 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake on a single platform
+#
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+#
+# env:
+#   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+#   BUILD_TYPE: Release
+#
+# jobs:
+#   build:
+#     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+#     # You can convert this to a matrix build if you need cross-platform coverage.
+#     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: Check if code is checked out
+#       run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
+
+#     - name: Install dependents
+#       run: |
+#         sudo apt-get update 
+#         sudo apt-get install libcurl4-openssl-dev libssl-dev -y
+
+#     - name: Install vcpkg
+#       run: |
+#         git clone https://github.com/Microsoft/vcpkg.git
+#         cd vcpkg
+#         ./bootstrap-vcpkg.sh
+#         ./vcpkg integrate install
+    
+#     - name: Install vcpkg package
+#       run: |
+#         vcpkg install
+
+#     - name: Configure CMake
+#       run: |
+#         mkdir build
+#         cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
+#       working-directory: ${{github.workspace}}
+
+
+#     - name: Build
+#       # Build your program with the given configuration
+#       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+name: Multi-platform and Multi-architecture CMake Build
 
 on:
   push:
@@ -14,41 +64,62 @@ env:
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - windows-latest
+        architecture:
+          - x64
+          - arm64
+
+    runs-on: ${{ matrix.platform }}
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Check if code is checked out
-      run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
+      - name: Check if code is checked out
+        run: |
+          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+            ls -la ${{ github.workspace }}
+          else
+            dir ${{ github.workspace }}
+          fi
 
-    - name: Install dependents
-      run: |
-        sudo apt-get update 
-        sudo apt-get install libcurl4-openssl-dev libssl-dev -y
+      - name: Install dependents
+        run: |
+          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+            sudo apt-get update
+            sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build -y
+          elif [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            choco install ninja
+          fi
 
-    - name: Install vcpkg
-      run: |
-        git clone https://github.com/Microsoft/vcpkg.git
-        cd vcpkg
-        ./bootstrap-vcpkg.sh
-        ./vcpkg integrate install
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git
+          cd vcpkg
+          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+            ./bootstrap-vcpkg.sh
+          else
+            bootstrap-vcpkg.bat
+          fi
+          vcpkg integrate install
     
-    - name: Install vcpkg package
-      run: |
-        vcpkg install
+      - name: Install vcpkg package
+        run: |
+          vcpkg install
 
-    - name: Configure CMake
-      run: |
-        mkdir build
-        cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
-      working-directory: ${{github.workspace}}
+      - name: Configure CMake
+        run: |
+          mkdir build
+          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DVCPKG_TARGET_TRIPLET=x64-linux -GNinja
+          else
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DVCPKG_TARGET_TRIPLET=x64-windows -GNinja
+          fi
+        working-directory: ${{ github.workspace }}
 
-
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
+      - name: Build
+        run: cmake --build build --config ${BUILD_TYPE}
+        working-directory: ${{ github.workspace }}
