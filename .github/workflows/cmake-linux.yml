@@ -28,7 +28,6 @@ jobs:
     - name: Install dependents
       run: |
         sudo apt-get update 
-        sudo apt-get upgrade
         sudo apt-get install libcurl4-openssl-dev libssl-dev -y
 
     - name: Install vcpkg
@@ -47,9 +46,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         mkdir build
-        ls
-        pwd
-        cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D-DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
       working-directory: ${{github.workspace}}
 
 
