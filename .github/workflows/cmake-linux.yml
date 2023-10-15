@@ -27,7 +27,8 @@ jobs:
 
     - name: Install dependents
       run: |
-        sudo apt-get update or try with --fix-missing
+        sudo apt-get update 
+        sudo apt-get upgrade
         sudo apt-get install libcurl4-openssl-dev libssl-dev -y
 
     - name: Install vcpkg
