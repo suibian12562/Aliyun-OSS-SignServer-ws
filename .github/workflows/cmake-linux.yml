@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main","action-test" ]
   pull_request:
     branches: [ "main" ]
 
@@ -16,7 +16,6 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
-          - arm64
 
     runs-on: ${{ matrix.platform }}
 
@@ -30,17 +29,35 @@ jobs:
       run: |
         sudo apt-get update 
         sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build -y
-
+  
     - name: Install vcpkg
       run: |
         git clone https://github.com/Microsoft/vcpkg.git
         cd vcpkg
         ./bootstrap-vcpkg.sh
         ./vcpkg integrate install
-    
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        # Assuming that vcpkg is installed in `~/vcpkg`
+        # Assuming that the build directory is `./build`
+        path: |
+          ./vcpkg_installed
+        key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+        restore-keys: |
+          vcpkg-
+
     - name: Install vcpkg package
       run: |
         vcpkg install
+
+    - name: Save vcpkg Cache
+      uses: actions/cache@v2
+      with:
+        path: ./vcpkg_installed
+        key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+
 
     - name: Configure CMake
       run: |
