@@ -40,6 +40,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     websocketpp::websocketpp
     nlohmann_json::nlohmann_json
     cpp-sdk
+	curl 
+	crypto 
+	pthread
 	${CRYPTO_LIBS}
 	${CLIENT_LIBS}
 ) 
