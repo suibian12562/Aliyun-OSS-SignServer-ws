@@ -16,7 +16,6 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
-          - arm64
 
     runs-on: ${{ matrix.platform }}
 
@@ -41,6 +40,23 @@ jobs:
     - name: Install vcpkg package
       run: |
         vcpkg install
+
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        # Assuming that vcpkg is installed in `~/vcpkg`
+        # Assuming that the build directory is `./build`
+        path: |
+          ~/vcpkg 
+          ./build/vcpkg_installed
+          ${{ env.HOME }}/.cache/vcpkg/archives
+          ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+          ${{ env.LOCALAPPDATA }}\vcpkg\archives
+          ${{ env.APPDATA }}\vcpkg\archives
+        key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.BUILD_TYPE }}  
 
     - name: Configure CMake
       run: |
