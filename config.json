@@ -1,0 +1,6 @@
+{
+    "AccessKeyId": "your_access_key",
+    "AccessKeySecret": "your_access_secret",
+    "port": 1145,
+    "sign_time": 40
+}

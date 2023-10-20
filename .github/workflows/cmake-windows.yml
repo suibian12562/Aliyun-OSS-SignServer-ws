@@ -88,7 +88,7 @@ on:
 env:
     # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
     BUILD_TYPE: Release
-    
+
 jobs:
     build:
       strategy:
@@ -119,7 +119,7 @@ jobs:
             .\vcpkg integrate install
   
         - name: Cache
-          uses: actions/cache@v2
+          uses: actions/cache@v3
           with:
             path: |
               ./vcpkg_installed
@@ -129,10 +129,10 @@ jobs:
   
         - name: Install vcpkg package
           run: |
-            vcpkg install
+            vcpkg install --triplet x64-windows
   
         - name: Save vcpkg Cache
-          uses: actions/cache@v2
+          uses: actions/cache@v3
           with:
             path: ./vcpkg_installed
             key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
@@ -145,4 +145,9 @@ jobs:
   
         - name: Build
           run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-  
+
+        - name: artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
+            path: ${{github.workspace}}/build/${{ env.BUILD_TYPE }}/Aliyun-OSS-SignServer-ws.exe
