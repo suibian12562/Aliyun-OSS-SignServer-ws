@@ -31,7 +31,7 @@ else()
 	endif()
 endif()
 
-set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
+##set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
 
