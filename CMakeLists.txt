@@ -39,7 +39,6 @@ find_package(websocketpp CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     websocketpp::websocketpp
     nlohmann_json::nlohmann_json
-    alibabacloud-oss-cpp-sdk
     cpp-sdk
 	${CRYPTO_LIBS}
 	${CLIENT_LIBS}
