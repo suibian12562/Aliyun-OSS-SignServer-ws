@@ -29,7 +29,7 @@ jobs:
       run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
 
     - name: Set architecture
-      run: echo "::set-env name=ARCHITECTURE::${{ matrix.architecture }}"  
+      run: echo "ARCHITECTURE=${{ matrix.architecture }}" >> $GITHUB_ENV
 
     - name: Install dependents
       run: |
