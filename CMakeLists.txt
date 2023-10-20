@@ -59,6 +59,44 @@ if (${TARGET_OS} STREQUAL "LINUX")
 target_link_libraries(${PROJECT_NAME} pthread)	
 endif()
 
+
+
+
+if (${TARGET_OS} STREQUAL "WINDOWS")
+	set(WLIB_TARGET "Win32")
+	if (CMAKE_CL_64)
+	set(WLIB_TARGET "x64")
+	endif()
+	set(CRYPTO_LIBS 
+		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/lib/${WLIB_TARGET}/ssleay32.lib 
+		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/lib/${WLIB_TARGET}/libeay32.lib)
+	set(CRYPTO_INCLUDE_DIRS 
+		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include) 
+
+	set(CLIENT_LIBS 
+		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/lib/${WLIB_TARGET}/libcurl.lib) 
+	set(CLIENT_INCLUDE_DIRS 
+		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include) 
+else()
+	include(FindCURL)
+	include(FindOpenSSL)
+
+	if(NOT CURL_FOUND)
+		message(FATAL_ERROR "Could not find curl")
+	endif()
+
+	if(NOT OPENSSL_FOUND)
+		message(FATAL_ERROR "Could not find openssl")
+	endif()
+
+	set(CRYPTO_LIBS ${OPENSSL_LIBRARIES})
+	set(CRYPTO_INCLUDE_DIRS ${OPENSSL_INCLUDE_DIR}) 
+	set(CRYPTO_LIBS_ABSTRACT_NAME crypto ssl)
+
+	set(CLIENT_LIBS ${CURL_LIBRARIES})
+	set(CLIENT_INCLUDE_DIRS ${CURL_INCLUDE_DIRS}) 
+	set(CLIENT_LIBS_ABSTRACT_NAME curl)
+endif()
 # target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 # set(EXPORT_COMPILE_COMMANDS ON)
 
