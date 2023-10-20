@@ -16,6 +16,9 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
+          - arm64
+          - x86
+
 
     runs-on: ${{ matrix.platform }}
 
@@ -24,6 +27,9 @@ jobs:
 
     - name: Check if code is checked out
       run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
+
+    - name: Set architecture
+      run: echo "::set-env name=ARCHITECTURE::${{ matrix.architecture }}"  
 
     - name: Install dependents
       run: |
