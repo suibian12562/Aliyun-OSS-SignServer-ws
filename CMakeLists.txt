@@ -6,6 +6,7 @@ project(Aliyun-OSS-SignServer-ws
     VERSION 0.0.1
 )
 
+set(EXPORT_COMPILE_COMMANDS ON)
  add_executable(${PROJECT_NAME} src/main.cpp)
  add_subdirectory(third_party)
  if (CMAKE_CROSSCOMPILING)
@@ -30,18 +31,31 @@ else()
 	endif()
 endif()
 
+set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(websocketpp CONFIG REQUIRED)
+
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    websocketpp::websocketpp
+    nlohmann_json::nlohmann_json
+    alibabacloud-oss-cpp-sdk
+    cpp-sdk
+	${CRYPTO_LIBS}
+	${CLIENT_LIBS}
+) 
+
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/include
-	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/)
+	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/
+	cpp-sdk${STATIC_LIB_SUFFIX}
+	)
 
  if (${TARGET_OS} STREQUAL "WINDOWS")
  target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include)
  endif()	
 
-target_link_libraries(${PROJECT_NAME} cpp-sdk${STATIC_LIB_SUFFIX})	
-target_link_libraries(${PROJECT_NAME} ${CRYPTO_LIBS})
-target_link_libraries(${PROJECT_NAME} ${CLIENT_LIBS})
 if (${TARGET_OS} STREQUAL "LINUX")
 target_link_libraries(${PROJECT_NAME} pthread)	
 endif()
