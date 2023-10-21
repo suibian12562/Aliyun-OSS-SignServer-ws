@@ -7,9 +7,11 @@ project(Aliyun-OSS-SignServer-ws
 )
 
 set(EXPORT_COMPILE_COMMANDS ON)
- add_executable(${PROJECT_NAME} src/main.cpp)
- add_subdirectory(third_party)
- if (CMAKE_CROSSCOMPILING)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+add_executable(${PROJECT_NAME} src/main.cpp)
+add_subdirectory(third_party)
+
+if (CMAKE_CROSSCOMPILING)
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 		set(PLATFORM_ANDROID 1)
 		set(TARGET_OS "ANDROID")
