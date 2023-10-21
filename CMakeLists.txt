@@ -34,8 +34,8 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 add_subdirectory(third_party)
 
 #set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 
 target_include_directories(${PROJECT_NAME}
