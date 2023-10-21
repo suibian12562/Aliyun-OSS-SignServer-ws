@@ -43,7 +43,7 @@ jobs:
           uses: actions/cache@v3
           with:
             path: |
-              ./build/vcpkg_installed
+              ./vcpkg
             key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('./vcpkg.json')}}
             restore-keys: |
               vcpkg-
@@ -55,7 +55,7 @@ jobs:
         - name: Save vcpkg Cache
           uses: actions/cache@v3
           with:
-            path: ./vcpkg_installed
+            path: ./vcpkg
             key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
   
         - name: Configure CMake

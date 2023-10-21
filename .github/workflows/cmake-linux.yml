@@ -47,7 +47,7 @@ jobs:
         # Assuming that vcpkg is installed in `~/vcpkg`
         # Assuming that the build directory is `./build`
         path: |
-          ./vcpkg_installed
+          ./vcpkg
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('./vcpkg.json')}}
         restore-keys: |
           vcpkg-
@@ -59,7 +59,7 @@ jobs:
     - name: Save vcpkg Cache
       uses: actions/cache@v2
       with:
-        path: ./vcpkg_installed
+        path: ./vcpkg
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
 
 
@@ -77,7 +77,7 @@ jobs:
 
     - name: List files
       run: |
-        tree -a -d ${{github.workspace}}/build/bin
+        tree -a -d ${{github.workspace}}
       working-directory: ${{github.workspace}}
       
 
