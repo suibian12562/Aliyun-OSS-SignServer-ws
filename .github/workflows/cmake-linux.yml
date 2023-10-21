@@ -67,7 +67,7 @@ jobs:
       run: |
         mkdir build
         cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/vcpkg/installed/${{ matrix.architecture }}-linux -GNinja
-        working-directory: ${{github.workspace}}
+      working-directory: ${{github.workspace}}
 
 
     - name: Build
