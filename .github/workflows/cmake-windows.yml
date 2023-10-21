@@ -149,8 +149,8 @@ jobs:
             tree
           working-directory: ${{github.workspace}}    
 
-        # - name: Build
-        #   run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        - name: Build
+          run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
         - name: artifact
           uses: actions/upload-artifact@v2
