@@ -42,3 +42,4 @@ HelloSocket-2023.8.6.vcxproj.filters
 build/
 .vscode/
 ./vcpkg_installed
+config.json

@@ -34,7 +34,7 @@ jobs:
     - name: Install dependents
       run: |
         sudo apt-get update 
-        sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build -y
+        sudo apt-get install libcurl4-openssl-dev libssl-dev ninja-build tree -y
   
     - name: Install vcpkg
       run: |
@@ -75,6 +75,13 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+
+    - name: List files
+      run: |
+        tree -a -d ${{github.workspace}}
+      working-directory: ${{github.workspace}}
+      
 
     - name: artifact
       uses: actions/upload-artifact@v2
