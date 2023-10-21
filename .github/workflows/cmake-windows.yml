@@ -156,4 +156,4 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
-            path: ${{github.workspace}}/build/${{ env.BUILD_TYPE }}/Aliyun-OSS-SignServer-ws.exe
+            path: ${{github.workspace}}/build/bin/${{ env.BUILD_TYPE }}/*.*

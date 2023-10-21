@@ -42,9 +42,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     websocketpp::websocketpp
     nlohmann_json::nlohmann_json
     cpp-sdk
-	curl 
-	crypto 
-	pthread
+	#curl 
+	#crypto 
+	#pthread
 	${CRYPTO_LIBS}
 	${CLIENT_LIBS}
 ) 
@@ -61,7 +61,7 @@ target_include_directories(${PROJECT_NAME}
  endif()	
 
 if (${TARGET_OS} STREQUAL "LINUX")
-target_link_libraries(${PROJECT_NAME} pthread)	
+target_link_libraries(${PROJECT_NAME} pthread curl pthread)	
 endif()
 
 
