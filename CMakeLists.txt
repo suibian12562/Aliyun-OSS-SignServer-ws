@@ -33,7 +33,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_executable(${PROJECT_NAME} src/main.cpp)
 add_subdirectory(third_party)
 
-##set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
+#set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
 
@@ -45,9 +45,11 @@ target_include_directories(${PROJECT_NAME}
 	)
 
 if (${TARGET_OS} STREQUAL "WINDOWS")
+
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include)
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+   PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include)
+
+   target_link_libraries(${PROJECT_NAME} PRIVATE 
     websocketpp::websocketpp
     nlohmann_json::nlohmann_json
     cpp-sdk

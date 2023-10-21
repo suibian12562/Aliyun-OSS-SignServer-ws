@@ -94,7 +94,7 @@ jobs:
       strategy:
         matrix:
           platform:
-            - windows-latest
+            - windows
           architecture:
             - x64
             - arm64
@@ -129,8 +129,8 @@ jobs:
   
         - name: Install vcpkg package
           run: |
-            vcpkg install --triplet x64-windows
-  
+            vcpkg install
+
         - name: Save vcpkg Cache
           uses: actions/cache@v3
           with:
@@ -140,7 +140,7 @@ jobs:
         - name: Configure CMake
           run: |
             mkdir build
-            cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
+            cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/vcpkg_installed/${{ matrix.architecture }}-${{ matrix.platform }}/share -GNinja
           working-directory: ${{github.workspace}}
         
 
