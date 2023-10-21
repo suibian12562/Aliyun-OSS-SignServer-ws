@@ -33,7 +33,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_executable(${PROJECT_NAME} src/main.cpp)
 add_subdirectory(third_party)
 
-set(CMAKE_PREFIX_PATH ".vcpkg_installed/x64-windows/share")
+#set(CMAKE_PREFIX_PATH ".vcpkg_installed/x64-windows/share")
 find_package(websocketpp CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
