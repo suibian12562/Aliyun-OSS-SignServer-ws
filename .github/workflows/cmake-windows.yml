@@ -94,7 +94,7 @@ jobs:
       strategy:
         matrix:
           platform:
-            - windows
+            - windows-latest
           architecture:
             - x64
             - arm64
@@ -140,7 +140,7 @@ jobs:
         - name: Configure CMake
           run: |
             mkdir build
-            cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/vcpkg_installed/${{ matrix.architecture }}-${{ matrix.platform }}/share -GNinja
+            cmake -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/vcpkg_installed/${{ matrix.architecture }}-windows/share -GNinja
           working-directory: ${{github.workspace}}
         
 
