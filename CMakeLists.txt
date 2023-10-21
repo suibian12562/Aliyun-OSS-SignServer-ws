@@ -40,6 +40,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE 
 websocketpp::websocketpp
 nlohmann_json::nlohmann_json
+cpp-sdk
 ) 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/include
