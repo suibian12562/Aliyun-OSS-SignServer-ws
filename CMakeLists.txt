@@ -6,12 +6,7 @@ project(Aliyun-OSS-SignServer-ws
     VERSION 0.0.1
 )
 
-set(EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-add_executable(${PROJECT_NAME} src/main.cpp)
-add_subdirectory(third_party)
-
-if (CMAKE_CROSSCOMPILING)
+if ()
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 		set(PLATFORM_ANDROID 1)
 		set(TARGET_OS "ANDROID")
@@ -33,11 +28,25 @@ else()
 	endif()
 endif()
 
+set(EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+add_executable(${PROJECT_NAME} src/main.cpp)
+add_subdirectory(third_party)
+
 ##set(CMAKE_PREFIX_PATH "./vcpkg_installed/x64-windows/share")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
 
 
+target_include_directories(${PROJECT_NAME}
+	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/include
+	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/
+	cpp-sdk${STATIC_LIB_SUFFIX}
+	)
+
+if (${TARGET_OS} STREQUAL "WINDOWS")
+target_include_directories(${PROJECT_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     websocketpp::websocketpp
     nlohmann_json::nlohmann_json
@@ -48,20 +57,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	${CRYPTO_LIBS}
 	${CLIENT_LIBS}
 ) 
+endif()	
 
-target_include_directories(${PROJECT_NAME}
-	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/include
-	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/
-	cpp-sdk${STATIC_LIB_SUFFIX}
-	)
 
- if (${TARGET_OS} STREQUAL "WINDOWS")
- target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include)
- endif()	
 
 if (${TARGET_OS} STREQUAL "LINUX")
-target_link_libraries(${PROJECT_NAME} pthread curl pthread)	
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    websocketpp::websocketpp
+    nlohmann_json::nlohmann_json
+    cpp-sdk
+	curl 
+	crypto 
+	pthread
+	${CRYPTO_LIBS}
+	${CLIENT_LIBS}
+) 
 endif()
 
 
@@ -81,7 +91,7 @@ if (${TARGET_OS} STREQUAL "WINDOWS")
 	set(CLIENT_LIBS 
 		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/lib/${WLIB_TARGET}/libcurl.lib) 
 	set(CLIENT_INCLUDE_DIRS 
-		${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include) 
+	${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/third_party/include) 
 else()
 	include(FindCURL)
 	include(FindOpenSSL)
