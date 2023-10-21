@@ -37,12 +37,17 @@ set(CMAKE_PREFIX_PATH ".vcpkg_installed/x64-windows/share")
 find_package(websocketpp CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
-
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+websocketpp::websocketpp
+nlohmann_json::nlohmann_json
+) 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/include
 	PRIVATE ${CMAKE_SOURCE_DIR}/third_party/aliyun-oss-cpp-sdk/sdk/
 	cpp-sdk${STATIC_LIB_SUFFIX}
 	)
+
+
 
 if (${TARGET_OS} STREQUAL "WINDOWS")
 
@@ -75,9 +80,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	${CLIENT_LIBS}
 ) 
 endif()
-
-
-
 
 if (${TARGET_OS} STREQUAL "WINDOWS")
 	set(WLIB_TARGET "Win32")
