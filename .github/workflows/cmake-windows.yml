@@ -52,6 +52,11 @@ jobs:
           run: |
             vcpkg install
 
+        - name: List files
+          run: |
+            tree
+          working-directory: ${{github.workspace}}   
+
         - name: Save vcpkg Cache
           uses: actions/cache@v3
           with:
@@ -64,12 +69,6 @@ jobs:
             cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/build/vcpkg_installed/${{ matrix.architecture }}-windows -GNinja
           working-directory: ${{github.workspace}}
         
-
-        - name: List files
-          run: |
-            tree
-          working-directory: ${{github.workspace}}    
-
         # - name: Build
         #   run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
