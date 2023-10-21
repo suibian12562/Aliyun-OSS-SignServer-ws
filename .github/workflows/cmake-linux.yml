@@ -77,7 +77,7 @@ jobs:
 
     - name: List files
       run: |
-        tree -a -d ${{github.workspace}}
+        tree -a -d ${{github.workspace}}/build/bin
       working-directory: ${{github.workspace}}
       
 
