@@ -67,7 +67,7 @@ jobs:
         - name: Configure CMake
           run: |
             mkdir build
-            cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
+            cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
           working-directory: ${{github.workspace}}
         
         - name: Build
