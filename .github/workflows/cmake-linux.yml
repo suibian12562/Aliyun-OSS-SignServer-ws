@@ -79,10 +79,14 @@ jobs:
       run: |
         tree -a -d ${{github.workspace}}
       working-directory: ${{github.workspace}}
-      
+    
+    - name: achieve file
+      run: |
+        tar -czf achieve.tar.gz ${{github.workspace}}/
 
+      
     - name: artifact
       uses: actions/upload-artifact@v2
       with:
         name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
-        path: ${{github.workspace}}**
+        path: ${{github.workspace}}/achieve.tar.gz
