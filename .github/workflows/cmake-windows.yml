@@ -30,7 +30,7 @@ jobs:
   
         - name: Install dependents
           run: |
-            choco install ninja gsudo -y
+            choco install ninja -y
   
         - name: Install vcpkg
           run: |
@@ -51,7 +51,7 @@ jobs:
         - name: Install vcpkg package
           run: |
             vcpkg install 
-            gsudo vcpkg integrate install
+            vcpkg integrate install
 
         - name: List files
           run: |
