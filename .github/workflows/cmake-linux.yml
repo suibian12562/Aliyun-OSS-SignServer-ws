@@ -82,11 +82,12 @@ jobs:
     
     - name: achieve file
       run: |
-        tar -czf achieve.tar.gz ${{github.workspace}}/
+        tar -czvf ../achieve.tar.gz ${{github.workspace}}/ --warning=no-file-changed
+
 
       
     - name: artifact
       uses: actions/upload-artifact@v2
       with:
         name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
-        path: ${{github.workspace}}/achieve.tar.gz
+        path: ../achieve.tar.gz
