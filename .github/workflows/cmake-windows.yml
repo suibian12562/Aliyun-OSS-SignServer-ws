@@ -50,7 +50,7 @@ jobs:
   
         - name: Install vcpkg package
           run: |
-            vcpkg install
+            vcpkg install 
 
         - name: List files
           run: |
@@ -66,7 +66,7 @@ jobs:
         - name: Configure CMake
           run: |
             mkdir build
-            cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH=${{github.workspace}}/vcpkg_installed/${{ matrix.architecture }}-windows -GNinja
+            cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
           working-directory: ${{github.workspace}}
         
         # - name: Build
