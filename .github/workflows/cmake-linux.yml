@@ -17,6 +17,7 @@ jobs:
         architecture:
           - x64
           - arm64
+          - x86
 
     runs-on: ${{ matrix.platform }}
 
@@ -84,4 +85,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
-        path: ${{github.workspace}}/build/
+        path: ${{github.workspace}}/build/bin/*
