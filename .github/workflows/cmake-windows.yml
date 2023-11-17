@@ -71,7 +71,7 @@ jobs:
           working-directory: ${{github.workspace}}
         
         - name: Build
-          run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake 
+          run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
         - name: artifact
           uses: actions/upload-artifact@v2
