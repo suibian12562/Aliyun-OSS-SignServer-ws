@@ -1,5 +1,6 @@
 # Aliyun-OSS-GeneratePresignedUrl-ws
-
+[![.github/workflows/cmake-linux.yml](https://github.com/suibian12562/Aliyun-OSS-SignServer-ws/actions/workflows/cmake-linux.yml/badge.svg?branch=main)](https://github.com/suibian12562/Aliyun-OSS-SignServer-ws/actions/workflows/cmake-linux.yml)
+[![.github/workflows/cmake-windows.yml](https://github.com/suibian12562/Aliyun-OSS-SignServer-ws/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/suibian12562/Aliyun-OSS-SignServer-ws/actions/workflows/cmake-windows.yml)
 提供一个websocket API,传入要访问的私有bucket中的文件生成签名URL并返回签名URL.计划包含客户端验证.
 
 **编译**  
