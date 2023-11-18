@@ -43,7 +43,7 @@ jobs:
         ./vcpkg integrate install
 
     - name: Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         # Assuming that vcpkg is installed in `~/vcpkg`
         # Assuming that the build directory is `./build`
@@ -58,7 +58,7 @@ jobs:
         vcpkg install
 
     - name: Save vcpkg Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ./vcpkg
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
@@ -82,7 +82,7 @@ jobs:
       working-directory: ${{github.workspace}}
     
     - name: artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ runner.os }}-${{ matrix.architecture }}-${{ env.BUILD_TYPE }}
         path: ${{github.workspace}}/build/bin/*
