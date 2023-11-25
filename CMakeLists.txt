@@ -35,7 +35,7 @@ add_subdirectory(third_party)
 
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-include(C:/vcpkg/scripts/buildsystems/vcpkg.cmake)
+# include(C:/vcpkg/scripts/buildsystems/vcpkg.cmake)
 list(APPEND CMAKE_PREFIX_PATH C:/vcpkg/packages)
 endif()
 

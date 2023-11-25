@@ -269,3 +269,6 @@ string subreplace(string resource_str, string sub_str, string new_str)
     return resource_str;
 }
 //nothing
+
+//对bucket鉴权
+bool bucket_auth(string bucket_name, string ak, string sk)   

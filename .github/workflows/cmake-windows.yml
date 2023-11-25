@@ -28,53 +28,53 @@ jobs:
         - name: Set architecture
           run: echo "ARCHITECTURE=${{ matrix.architecture }}" >> $GITHUB_ENV
   
-        - name: Install dependents
-          run: |
-            choco install ninja -y
+        # - name: Install dependents
+        #   run: |
+        #     choco install ninja -y
   
-        - name: Install vcpkg
-          run: |
-            git clone https://github.com/Microsoft/vcpkg.git
-            cd vcpkg
-            .\bootstrap-vcpkg.bat
-            .\vcpkg integrate install
+        # - name: Install vcpkg
+        #   run: |
+        #     git clone https://github.com/Microsoft/vcpkg.git
+        #     cd vcpkg
+        #     .\bootstrap-vcpkg.bat
+        #     .\vcpkg integrate install
   
-        - name: Cache
-          uses: actions/cache@v3
-          with:
-            path: |
-              ./vcpkg
-            key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('./vcpkg.json')}}
-            restore-keys: |
-              vcpkg-
+        # - name: Cache
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: |
+        #       ./vcpkg
+        #     key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('./vcpkg.json')}}
+        #     restore-keys: |
+        #       vcpkg-
   
-        - name: Install vcpkg package
-          run: |
-            vcpkg install 
-            vcpkg integrate install
+        # - name: Install vcpkg package
+        #   run: |
+        #     vcpkg install 
+        #     vcpkg integrate install
 
-        - name: List files
-          run: |
-            tree
-          working-directory: ${{github.workspace}}   
+        # - name: List files
+        #   run: |
+        #     tree
+        #   working-directory: ${{github.workspace}}   
 
-        - name: Save vcpkg Cache
-          uses: actions/cache@v3
-          with:
-            path: ./vcpkg
-            key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+        # - name: Save vcpkg Cache
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: ./vcpkg
+        #     key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
   
-        - name: Configure CMake
-          run: |
-            mkdir build
-            cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
-          working-directory: ${{github.workspace}}
+        # - name: Configure CMake
+        #   run: |
+        #     mkdir build
+        #     cmake -S . -B  ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -GNinja
+        #   working-directory: ${{github.workspace}}
         
-        - name: Build
-          run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        # - name: Build
+        #   run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-        - name: artifact
-          uses: actions/upload-artifact@v3
-          with:
-            name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
-            path: ${{github.workspace}}/build/bin/${{ env.BUILD_TYPE }}/*
+        # - name: artifact
+        #   uses: actions/upload-artifact@v3
+        #   with:
+        #     name: ${{ runner.os }}-${{ env.BUILD_TYPE }}
+        #     path: ${{github.workspace}}/build/bin/${{ env.BUILD_TYPE }}/*
