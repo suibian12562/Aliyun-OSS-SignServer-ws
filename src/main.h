@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <vector>
 #include <ctime>
@@ -9,8 +9,9 @@
 #include <alibabacloud/oss/OssClient.h>
 #include <nlohmann/json.hpp>
 
-using std::string;
-using nlohmann::json;
+using namespace std;
+using namespace nlohmann;
+using namespace AlibabaCloud::OSS;
 
 struct Config {
     std::string AccessKeyId;
@@ -41,9 +42,9 @@ using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 typedef server::message_ptr message_ptr;
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
-void on_http(server* s, websocketpp::connection_hdl hdl);
-void on_close(websocketpp::connection_hdl);
+vector<message_info> cache;
+vector<bucket_info> bucket_permissions;
+Config config;
 
 string subreplace(string resource_str, string sub_str, string new_str)
 {
@@ -132,7 +133,7 @@ void createDefaultBucketJson(const std::string& filename) {
 
 std::vector<bucket_info> readBucketInfoFromFile(const std::string& filename) {
     std::ifstream file(filename);
-    
+
     if (!file.is_open()) {
         std::cerr << "Error: " << filename << " not found. Creating a default file." << std::endl;
         createDefaultBucketJson(filename);
@@ -162,4 +163,93 @@ std::vector<bucket_info> readBucketInfoFromFile(const std::string& filename) {
         std::cerr << "Error: Unable to parse JSON in file " << filename << ": " << e.what() << std::endl;
         return {};
     }
+}
+
+void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
+    try
+    {
+        std::cout << "on_message called with hdl: " << hdl.lock().get()
+            << " and message: " << msg->get_payload()
+            << std::endl;
+        message_info temp;
+        message_info push_temp;
+        int i = 0;
+        int if_cache = 0;
+        time_t now;
+        json data = json::parse(msg->get_payload());//get data from client
+        //cout << data << endl;
+       temp = json::parse(msg->get_payload()).get<message_info>();//json to message_info(temp)
+       auto it = begin(cache);
+       while (it != end(cache))
+       {
+           if ((time(&now) - it->_request_time) < config.sign_time)
+           {
+               cout << "**Hit cache**\a" << endl;
+               if_cache = 1;
+               break;
+           }
+           else
+           {
+               cout << "*********************delete vector*************************\a" << i << endl;
+               it = cache.erase(it);
+           }
+       }
+
+       if (if_cache != 1)
+       {
+           ++i;
+       }
+
+        string buf;
+        if (if_cache != 1)
+        {
+            InitializeSdk();
+            ClientConfiguration conf;
+            OssClient client(temp._Endpoint, config.AccessKeyId, config.AccessKeySecret, conf);
+            std::time_t t = std::time(nullptr) + config.sign_time;
+
+            auto genOutcome = client.GeneratePresignedUrl(temp._Bucket, temp._GetobjectUrlName, t, Http::Get);
+            if (genOutcome.isSuccess()) {
+                std::cout << "GeneratePresignedUrl for " << hdl.lock().get() << " success, Gen url:" << genOutcome.result().c_str() << std::endl;
+                push_temp._GenedUrl = genOutcome.result().c_str();
+                push_temp._Bucket = temp._Bucket;
+                push_temp._GetobjectUrlName = temp._GetobjectUrlName;
+                push_temp._Endpoint = temp._Endpoint;
+                push_temp._request_time = (time(&now));
+                cache.push_back(push_temp);
+                //cache[i]._GenedUrl = genOutcome.result().c_str();//save gened Url  something wrong
+                buf = genOutcome.result().c_str();//pass data
+
+            }
+            else {
+                cout << "GeneratePresignedUrl fail" <<
+                    ",code:" << genOutcome.error().Code() <<
+                    ",message:" << genOutcome.error().Message() <<
+                    ",requestId:" << genOutcome.error().RequestId() << std::endl;
+            }
+        }
+        else
+        {
+            buf = cache[i]._GenedUrl;
+        }
+        string a = "+";
+        string b = "%20";
+        subreplace(buf, a, b);
+        //s->send(hdl, msg->get_payload(), msg->get_opcode());//复读机
+        s->send(hdl, buf, msg->get_opcode());
+        // s->send(hdl, cache[i]._GenedUrl, msg->get_opcode());
+    }
+    catch (websocketpp::exception const& e) {
+        std::cerr << "Echo failed because: "
+            << "(" << e.what() << ")" << std::endl;
+    }
+    catch (json::exception const& e) {
+        std::cerr << "Echo failed because: "
+            << "(" << e.what() << ")" << std::endl;
+        s->send(hdl, e.what(), msg->get_opcode());
+    }
+}//websocket server
+
+void on_close(websocketpp::connection_hdl) {
+    std::cout << "Close handler" << std::endl;
 }
