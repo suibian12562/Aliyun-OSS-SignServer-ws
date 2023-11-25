@@ -43,3 +43,4 @@ build/
 .vscode/
 ./vcpkg_installed
 config.json
+bucket.json

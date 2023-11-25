@@ -1,50 +1,22 @@
-﻿#include <iostream>
-#include <string>
-#include <vector>
-#include <ctime>
-#include <fstream>
-
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-#include <alibabacloud/oss/OssClient.h>
-#include <nlohmann/json.hpp>
+﻿#include "main.h"
 
 using namespace std;
 using namespace nlohmann;
 using namespace AlibabaCloud::OSS;
 
-struct Config {
-    std::string AccessKeyId;
-    std::string AccessKeySecret;
-    long sign_time;
-    int port;
-};
-struct message_info
-{
-    std::string _Endpoint;
-    std::string _Bucket;
-    std::string _GetobjectUrlName;
-    std::string _GenedUrl;
-    long _request_time;
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(message_info, _Endpoint, _Bucket, _GetobjectUrlName)
-};
 vector<message_info> cache;
+vector<bucket_info> bucket_permissions;
+Config config;
 
-Config readConfigFromFile(const std::string& filename);
-void createDefaultConfig(const std::string& filename);
-string subreplace(string resource_str, string sub_str, string new_str);//function 
-Config config = readConfigFromFile("config.json");
-
-typedef websocketpp::server<websocketpp::config::asio> server;
-using websocketpp::lib::placeholders::_1;
-using websocketpp::lib::placeholders::_2;
-using websocketpp::lib::bind;
-typedef server::message_ptr message_ptr;
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
-void on_http(server* s, websocketpp::connection_hdl hdl);
-void on_close(websocketpp::connection_hdl);
 
 int main(int argc, char* argv[]){
+    config = readConfigFromFile("config.json");
+    bucket_permissions = readBucketInfoFromFile("bucket.json");
+
+    for (const auto &bucket : bucket_permissions)
+    {
+            std::cout << "Bucket: " << bucket._Bucket << ", Allowed: " << bucket.allowed << ", Password: " << bucket.password << std::endl;
+    }
     std::cout << "Specified port: " << config.port << std::endl;
     std::cout << "AccessKeyId: " << config.AccessKeyId << std::endl;
     std::cout << "AccessKeySecret: " << config.AccessKeySecret << std::endl;
@@ -64,11 +36,9 @@ int main(int argc, char* argv[]){
 
         // Register our message handler
         echo_server.set_message_handler(bind(&on_message, &echo_server, ::_1, ::_2));
-        echo_server.set_http_handler(bind(&on_http, &echo_server, ::_1));
         echo_server.set_close_handler(&on_close);
 
         //bind()
-
         echo_server.listen(config.port);
 
         // Start the server accept loop
@@ -91,56 +61,6 @@ int main(int argc, char* argv[]){
     }
 }
 
-void createDefaultConfig(const std::string& filename) {
-    Config config;
-    config.AccessKeyId = "your_access_key";
-    config.AccessKeySecret = "your_access_secret";
-    config.sign_time = 40;
-    config.port = 1145;
-
-    std::ofstream file(filename);
-    if (file.is_open()) {
-        json jsonData = {
-            {"AccessKeyId", config.AccessKeyId},
-            {"AccessKeySecret", config.AccessKeySecret},
-            {"sign_time", config.sign_time},
-            {"port",config.port}
-        };
-        file << jsonData.dump(4);  // Write JSON with indentation
-        file.close();
-    }
-    else {
-        std::cerr << "Error: Unable to create config file." << std::endl;
-    }
-}//在不存在配置文件时创建默认文件
-
-Config readConfigFromFile(const std::string& filename) {
-    Config config;
-
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Config file not found. Creating a default config file.Please config and restart the program" << std::endl;
-        createDefaultConfig(filename);
-        return config;  // write default config
-    }
-
-    try {
-        json jsonData;
-        file >> jsonData;
-
-        config.AccessKeyId = jsonData["AccessKeyId"];
-        config.AccessKeySecret = jsonData["AccessKeySecret"];
-        config.sign_time = jsonData["sign_time"];
-        config.port = jsonData["port"];
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: Unable to parse config JSON: " << e.what() << std::endl;
-    }
-
-    file.close();
-    return config;
-}//读取配置文件
-
 void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
     try
     {
@@ -155,23 +75,6 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
         json data = json::parse(msg->get_payload());//get data from client
         //cout << data << endl;
        temp = json::parse(msg->get_payload()).get<message_info>();//json to message_info(temp)
-       /*AfterDelete://unreadable
-       for (auto it = begin(cache); it != end(cache); ++it, ++i)
-        {
-            if (temp._GetobjectUrlName == cache[i]._GetobjectUrlName && (time(&now) - cache[i]._request_time) < config.sign_time)
-            {
-                cout << "**Hit cache**\a" << endl;
-                if_cache = 1;
-                break;
-            }
-            else {}
-            if ((time(&now) - cache[i]._request_time) < config.sign_time)
-            {
-                cache.erase(cache.begin() + i); // 删除下标为 i 的元素
-                cout << "*********************delete vector*************************" << i << endl;
-                goto AfterDelete;
-            }
-        }*///bugful 
        auto it = begin(cache);
        while (it != end(cache))
        {
@@ -243,32 +146,8 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
     }
 }//websocket server
 
-void on_http(server* s, websocketpp::connection_hdl hdl) {
-    server::connection_ptr con = s->get_con_from_hdl(hdl);
-
-    std::string res = con->get_request_body();
-
-    std::stringstream ss;
-    ss << "got HTTP request with " << res.size() << " bytes of body data.";
-
-    con->set_body(ss.str());
-    con->set_status(websocketpp::http::status_code::ok);
-}//test
-
 void on_close(websocketpp::connection_hdl) {
     std::cout << "Close handler" << std::endl;
 }
 
-string subreplace(string resource_str, string sub_str, string new_str)
-{
-    string::size_type pos = 0;
-    while ((pos = resource_str.find(sub_str)) != string::npos)   //替换所有指定子串
-    {
-        resource_str.replace(pos, sub_str.length(), new_str);
-    }
-    return resource_str;
-}
-//nothing
 
-//对bucket鉴权
-bool bucket_auth(string bucket_name, string ak, string sk)   
