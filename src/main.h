@@ -107,9 +107,8 @@ Config readConfigFromFile(const string& filename) {
 
 void createDefaultBucketJson(const std::string& filename) {
     std::vector<bucket_info> default_buckets = {
-        {"default_bucket1", "read", "password1"},
-        {"default_bucket2", "write", "password2"}
-        // Add more default bucket entries if needed
+        {"default_bucket1", "yes", "password1"},
+        {"default_bucket2", "no", "password2"}
     };
 
     json json_data;
@@ -124,7 +123,7 @@ void createDefaultBucketJson(const std::string& filename) {
 
     std::ofstream file(filename);
     if (file.is_open()) {
-        file << json_data.dump(4);  // Write JSON with indentation
+        file << json_data.dump(4);
         file.close();
     } else {
         std::cerr << "Error: Unable to create " << filename << " file." << std::endl;
@@ -133,8 +132,7 @@ void createDefaultBucketJson(const std::string& filename) {
 
 std::vector<bucket_info> readBucketInfoFromFile(const std::string& filename) {
     std::ifstream file(filename);
-
-    // If bucket.json does not exist, create a default one
+    
     if (!file.is_open()) {
         std::cerr << "Error: " << filename << " not found. Creating a default file." << std::endl;
         createDefaultBucketJson(filename);
