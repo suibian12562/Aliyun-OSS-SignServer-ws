@@ -24,8 +24,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Check if code is checked out
-      run: ls -la /home/runner/work/Aliyun-OSS-SignServer-ws
+    - name: Install git submodules
+      run: git submodule update --init --recursive
 
     - name: Set architecture
       run: echo "ARCHITECTURE=${{ matrix.architecture }}" >> $GITHUB_ENV
