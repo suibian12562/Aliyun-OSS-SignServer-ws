@@ -1,1 +1,1 @@
-add_subdirectory("aliyun-oss-cpp-sdk")
+add_subdirectory("osssdk")
