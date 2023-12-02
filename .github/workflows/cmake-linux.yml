@@ -49,6 +49,7 @@ jobs:
         # Assuming that the build directory is `./build`
         path: |
           ./vcpkg
+          ./vcpkg_install
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('./vcpkg.json')}}
         restore-keys: |
           vcpkg-
