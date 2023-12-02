@@ -19,6 +19,8 @@ jobs:
           - windows-latest
         architecture:
           - x64
+          - arm64
+          - x86
 
     runs-on: ${{ matrix.platform }}
 
